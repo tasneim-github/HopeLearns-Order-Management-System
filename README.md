@@ -49,7 +49,7 @@ Include all the required helper functions. Such as:
 ### Certain design choices I debated and why I made them
 #### Database Design Choice
 A major issue I faced was storing multivalued attributes like colors and reference images in the orders table.
-I decided to create separate tables for color_palette, character_references, and background_references, each linked to the orders table with foreign keys. I chose this approach since it adheres to database best practices and ensures scalability.\
+I decided to create separate tables for color_palette, character_references, and background_references, each linked to the orders table with foreign keys. I chose this approach since it adheres to database best practices and ensures scalability.
 #### Validation of order_id
 The order_id value comes from a hidden input in forms, making it vulnerable to manipulation. Therefore,
 I implemented a helper function, is_valid_order_id(), to validate the ID before use. This centralized validation reduces redundancy and improves security.
