@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <img src="static/hope_learns.jpg" alt="A happy girl" class="center-image">
+
+    <form action="/register" id="register-input-container" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="round-rect-input" name="username" placeholder="Username" type="text">
+        </div>
+        <div class="mb-3">
+            <input class="round-rect-input" name="email" placeholder="Email" type="email">
+        </div>
+        <div class="mb-3">
+            <input class="round-rect-input" name="password" placeholder="Password" type="password">
+        </div>
+        <div class="mb-3">
+            <input class="round-rect-input" name="confirmation" placeholder="Password (again)" type="password">
+        </div>
+        <button class="round-rect-button btn btn-primary opacity-75 hover-opacity-100" type="submit">Register</button>
+    <!-- Message and link to login page -->
+        <div>
+            <h4 class="footer">
+                Already a member?
+            </h4>
+            <a href="/login" class="link-register">Login</a>
+        </div>
+    </form>
+{% endblock %}

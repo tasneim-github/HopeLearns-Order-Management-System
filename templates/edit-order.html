@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Edit Order
+{% endblock %}
+
+{% block main %}
+    <img src="static/hope_learns.jpg" alt="A happy girl" class="center-image">
+    <div class="order-form-container">
+        <form action="/edit-order" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="order_id" value="{{ order.order_id }}">
+        <!-- Order Name -->
+            <label for="order-name">Name of the Order</label>
+            <input type="text" id="order-name" class="special-input" name="order_name" value="{{ order.order_name }}">
+
+        <!-- Character Details -->
+            <h2>Character Details</h2>
+            <label for="character-part">Part to be Drawn</label>
+            <select id="character-part" name="character_part">
+                <option value="Head" {% if order.character_part == 'Head' %}selected{% endif %}>Head</option>
+                <option value="Half Body" {% if order.character_part == 'Half Body' %}selected{% endif %}>Half Body</option>
+                <option value="Full Body" {% if order.character_part == 'Full Body' %}selected{% endif %}>Full Body</option>
+            </select>
+
+            <label for="preferred-style">Preferred Style</label>
+            <select id="preferred-style" name="preferred_style">
+                <option value="Chibi" {% if order.preferred_style == 'Chibi' %}selected{% endif %}>Chibi</option>
+                <option value="Normal" {% if order.preferred_style == 'Normal' %}selected{% endif %}>Normal</option>
+            </select>
+
+            <label for="pose-view">Pose View</label>
+            <select id="pose-view" name="pose_view">
+                <option value="Front View" {% if order.pose_view == 'Front View' %}selected{% endif %}>Front View</option>
+                <option value="3/4 View" {% if order.pose_view == '3/4 View' %}selected{% endif %}>3/4 View</option>
+                <option value="Side View" {% if order.pose_view == 'Side View' %}selected{% endif %}>Side View</option>
+            </select>
+
+            <label for="pose-description">Pose Description</label>
+            <textarea id="pose-description" name="pose_description" placeholder="Describe the character pose in as much detail as possible">{{ order.pose_description }}</textarea>
+
+
+            <label for="character-features-description">Character Features Description</label>
+            <textarea id="character-features-description" name="character_features_description" placeholder="Describe the character features in as much detail as possible">{{ order.character_features_description }}</textarea>
+
+
+            <label for="outfit-description">Outfit Description</label>
+            <textarea id="outfit-description" name="outfit_description" placeholder="Describe the character outfit in as much detail as possible">{{ order.outfit_description }}</textarea>
+
+            <label for="character-references">Character References (png / jpeg / jpg)</label>
+            <div class="reference-list">
+                {% if character_references %}
+                    {% for reference in character_references %}
+                        <a href="{{ reference.file_path }}" target="_blank" download>
+                            <img src="{{ reference.file_path }}" alt="A character reference." class="thumbnail">
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <input type="file" id="character-references" name="character_references[]" accept=".png, .jpeg, .jpg" multiple>
+            <small class="form-note">If available, add references for the character.</small>
+
+        <!-- Color Palette -->
+            <label for="color1">Color Palette</label>
+            <div>
+                <div id="colorInputs" class="color-inputs">
+                    {% for color in colors %}
+                        <div class="color-box-container">
+                            <input class="color-box" type="color" id="color1" name="colors[]" value="{{ color.color_hex }}">
+                            <small class="form-note">{{ color.color_hex }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="addColor" class="add-color-btn">+</button>
+            </div>
+            <small class="form-note">Note: Some colors might change depending on the background chosen.</small>
+
+
+            <script>
+                const colorInputs = document.getElementById("colorInputs");
+                const addColor = document.getElementById("addColor");
+                let colorCount = 2;
+
+                addColor.addEventListener("click", () => {
+                    colorCount++;
+                    const colorContainer = document.createElement("div");
+                    colorContainer.classList.add("color-box-container");
+
+                    const newColorInput = document.createElement("input");
+                    newColorInput.type = "color";
+                    newColorInput.name = "colors[]";
+                    newColorInput.classList.add("color-box");
+                    newColorInput.value = "#ffffff";
+                    colorInputs.appendChild(newColorInput);
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.type = "button";
+                    deleteBtn.classList.add("delete-color-btn");
+                    deleteBtn.textContent = "×";
+
+                // Add event listener to delete button
+                    deleteBtn.addEventListener("click", () => {
+                        colorContainer.remove();
+                    });
+
+                    colorContainer.appendChild(newColorInput);
+                    colorContainer.appendChild(deleteBtn);
+                    colorInputs.appendChild(colorContainer);
+                });
+
+            // Add event listeners to existing delete buttons
+                document.querySelectorAll(".delete-color-btn").forEach((button) => {
+                    button.addEventListener("click", (event) => {
+                        event.target.closest(".color-box-container").remove();
+                    });
+                });
+            </script>
+
+        <!-- Background -->
+            <h2>Background</h2>
+            <div class="radio-group">
+                <label for="background-with">
+                    <input type="radio" id="background-with" name="background" value="with-background" {% if order.has_background %}checked{% endif %}>
+                    With Background
+                </label>
+
+                <label for="background-without">
+                    <input type="radio" id="background-without" name="background" value="without-background" {% if not order.has_background %}checked{% endif %}>
+                    Without Background
+                </label>
+            </div>
+
+            <div id="with-background-section">
+                <label for="background-description">Background Description</label>
+                <textarea id="background-description" name="background_description" placeholder="Describe the background in as much detail as possible">{{order.background_description }}</textarea>
+
+                <label for="background-references">Background References (png / jpeg / jpg)</label>
+                <div class="reference-list">
+                    {% if background_references %}
+                        {% for reference in background_references %}
+                            <a href="{{ reference.file_path }}" target="_blank" download>
+                                <img src="{{ reference.file_path }}" alt="A character reference." class="thumbnail">
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <input type="file" id="background-references" name="background_references[]" accept=".png, .jpeg, .jpg" multiple>
+                <small class="form-note">If available, add references for the background.</small>
+            </div>
+
+            <script>
+                const backgroundWith = document.getElementById("background-with");
+                const backgroundWithout = document.getElementById("background-without");
+                const withBackgroundSection = document.getElementById("with-background-section");
+
+                backgroundWith.addEventListener("change", () => {
+                    withBackgroundSection.style.display = "flex";
+                });
+
+                backgroundWithout.addEventListener("change", () => {
+                    withBackgroundSection.style.display = "none";
+                });
+            </script>
+
+        <!-- Order Due Date -->
+            <label for="due-date">Order Due Date</label>
+            <input type="date" id="due-date" name="due_date" value="{{ order.order_due_date }}">
+
+        <!--Note-->
+            <small class="form-note">When your order is revised and the price is decided, you will decide whether you accept or reject the price.</small>
+            <small class="form-note imp"><b>WARNING: Any details that are not mentioned in the descriptions will be decided by the artist.</b></small>
+
+        <!-- Submit -->
+            <input type="submit" value="Submit Changes">
+        </form>
+    </div>
+{% endblock %}

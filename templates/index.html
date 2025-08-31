@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {% if is_admin %}
+        Admin Index
+    {% else %}
+        User Index
+    {% endif %}
+{% endblock %}
+
+{% block main %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="align-left">Name</th>
+                <th class="align-right">Price</th>
+                <th class="align-right">Status</th>
+                <th class="align-right">Due Date</th>
+                <th class="align-right">Created</th>
+                <th></th>
+                {% if action_required %}
+                    <th></th>
+                    <th></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in past_orders %}
+                <tr>
+                    <td class="align-left">{{ order.order_name}}</td>
+                    {% if order.price != '-' %}
+                        <td class="align-right">{{ order.price | usd }}</td>
+                    {% else %}
+                        <td class="align-right">{{ order.price }}</td>
+                    {% endif %}
+                    {% if order.status == 'pending' %}
+                        <td class="align-right color-grey bold">Pending</td>
+                    {% elif order.status == 'reviewed' %}
+                        <td class="align-right bold">Reviewed</td>
+                    {% elif order.status == 'accepted' %}
+                        <td class="align-right color-green bold">Accepted</td>
+                    {% else %}
+                        <td class="align-right color-green bold">Completed</td>
+                    {% endif %}
+                    <td class="align-right">{{ order.order_due_date }}</td>
+                    <td class="align-right">{{ order.created_at }}</td>
+
+                    {% if action_required %}
+            <!--User Buttons-->
+                        {% if not is_admin %}
+                            {% if order.status == 'reviewed' %}
+                                <td class="align-right small-width">
+                                    <form action="/handle-action" method="post" onsubmit="return confirmAccept();">
+                                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                        <button type="submit" class="green-btn" value="accept" name="action">Accept</button>
+                                    </form>
+                                </td>
+
+                                <td class="align-right small-width">
+                                    <form action="/handle-action" method="post" onsubmit="return confirmReject();">
+                                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                        <button type="submit" class="red-btn" value="reject" name="action">Reject</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+
+                            {% if order.status == 'pending' %}
+                                <td class="align-right small-width">
+                                    <form action="/edit-order" method="get">
+                                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                        <button type="submit" class="yellow-btn">Edit</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+
+            <!--Admin Buttons-->
+                        {% else %}
+                            {% if order.status == 'pending' or order.status == 'reviewed' %}
+                                <td class="align-right small-width">
+                                    <form action="/edit-order-price" method="get">
+                                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                        <button type="submit" class="yellow-btn">Edit Price</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+
+                            {% if order.status == 'accepted' %}
+                                <td class="align-right small-width">
+                                    <form action="/handle-action" method="post" onsubmit="return confirmComplete();">
+                                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                        <button type="submit" class="green-btn" value="complete" name="action">Complete</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+
+                        {% endif %}
+
+            <!--Buttons for both-->
+                        {% if order.status == 'pending' or order.status == 'completed' or is_admin %}
+                            {% if order.status == 'completed' %}
+                                <td></td>
+                            {% endif %}
+                            <td class="align-right small-width">
+                                <form action="/handle-action" method="post" onsubmit="return confirmDelete();">
+                                    <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                    <button type="submit" class="red-btn" value="remove" name="action">Remove</button>
+                                </form>
+                            </td>
+                        {% endif %}
+                    {% endif %}
+                    {% if order.status == 'accepted' and not is_admin %}
+                        <td></td>
+                        <td></td>
+                    {% endif %}
+                    <td class="align-right small-width">
+                        <form action="/view-details" method="get">
+                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                            <button type="submit" class="yellow-btn">View Details</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this order? Note that this action is irreversible.");
+        }
+
+        function confirmAccept() {
+            return confirm("Are you sure you accept this price?  Note that this action is irreversible.");
+        }
+
+        function confirmReject() {
+            return confirm("Are you sure you reject this price?  Note that this action is irreversible.");
+        }
+
+        function confirmComplete() {
+            return confirm("Are you sure you have complete this order?  Note that this action is irreversible.");
+        }
+    </script>
+{% endblock %}

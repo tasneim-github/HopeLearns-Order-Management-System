@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Edit Order Price
+{% endblock %}
+
+{% block main %}
+    <div>
+        <img src="static/hope_learns.jpg" alt="A happy girl" class="center-image">
+        <div class="order-form-container">
+            <form action="/edit-order-price" method="post">
+                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                <h2>User Details</h2>
+                <h3>Username</h3>
+                <p class="special-input">{{ user_info["username"] }}</p>
+                <h3>Email</h3>
+                <p class="special-input">{{ user_info["email"] }}</p>
+
+                <h3>Name of the Order</h3>
+                <p class="special-input">{{ order.order_name }}</p>
+
+                <h2>Character Details</h2>
+                <h3>Part to be Drawn</h3>
+                <p>{{ order.character_part }}</p>
+
+
+                <h3>Preferred Style</h3>
+                <p>{{ order.preferred_style }}</p>
+
+
+                <h3>Pose View</h3>
+                <p>{{ order.pose_view }}</p>
+
+
+                <h3>Pose Description</h3>
+                <p>{{ order.pose_description }}</p>
+
+
+                <h3>Character Features Description</h3>
+                <p>{{ order.character_features_description }}</p>
+
+
+                <h3>Outfit Description</h3>
+                <p>{{ order.outfit_description }}</p>
+
+                <h3>Character References</h3>
+                <div class="reference-list">
+                    {% if character_references %}
+                        {% for reference in character_references %}
+                            <a href="{{ reference.file_path }}" target="_blank" download>
+                                <img src="{{ reference.file_path }}" alt="A character reference." class="thumbnail">
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p>No character references provided.</p>
+                    {% endif %}
+                </div>
+
+            <!-- Color Palette -->
+                <h3>Color Palette</h3>
+                <div class="color-inputs">
+                    {% for color in colors %}
+                        <div class="color-box-container">
+                            <div class="color-box" style="background-color: {{ color.color_hex }};"></div>
+                            <small class="color-code">{{ color.color_hex }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            <!-- Background -->
+                <h2>Background</h2>
+                <h3>Background Preference</h3>
+                <p>{{ "With Background" if order.has_background else "Without Background" }}</p>
+
+                {% if order.has_background %}
+                    <h3>Background Description</h3>
+                    <p>{{ order.background_description }}</p>
+
+                    <h3>Background References</h3>
+                    <div class="reference-list">
+                        {% if background_references %}
+                            {% for reference in background_references %}
+                                <a href="{{ reference.file_path }}" target="_blank" download>
+                                    <img src="{{ reference.file_path }}" alt="A character reference." class="thumbnail">
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p>No background references provided.</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            <!-- Order Due Date -->
+                <h3>Order Due Date</h3>
+                <p>{{ order.order_due_date }}</p>
+
+            <!-- Status -->
+                <h3>Order Status</h3>
+                {% if order.status == 'pending' %}
+                    <p class="color-grey">Pending</p>
+                {% elif order.status == 'reviewed' %}
+                    <p>Reviewed</p>
+                {% elif order.status == 'accepted' %}
+                    <p class="color-green">Accepted</p>
+                {% else %}
+                    <p class="color-green">Completed</p>
+                {% endif %}
+
+                {% if not view_only %}
+            <!--Price-->
+                    <label for="order-price">Price ($)</label>
+                    <input type="number" id="order-price" class="special-input" name="order_price" placeholder="Enter order price">
+
+            <!-- Save changes -->
+                    <input type="submit" value="Save Changes">
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
