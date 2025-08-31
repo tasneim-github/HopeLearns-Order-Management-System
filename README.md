@@ -1,4 +1,11 @@
 # Hope Learns Order Management System
+
+> ⚠️ **Disclaimer**  
+> This project was created as part of my CS50 Final Project.  
+> It is published here **for educational and portfolio purposes only**.  
+> Please do not copy or submit this code as your own work in CS50 or any other course.  
+> Respect the course policies and academic honesty guidelines.
+
 ### Video Demo:  (https://youtu.be/OX5ZMfU8kSk)
 ### Description
 
